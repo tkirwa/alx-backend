@@ -1,4 +1,4 @@
-def index_range(page, page_size):
+def index_range(page: int, page_size: int) -> tuple:
     """
     Returns a tuple of the start and end indexes for a given page and page
       size.
@@ -14,6 +14,5 @@ def index_range(page, page_size):
         return (0, 0)  # Invalid input, return an empty range
 
     start_index = (page - 1) * page_size
-    end_index = start_index + page_size
-
+    end_index = page * page_size
     return (start_index, end_index)
