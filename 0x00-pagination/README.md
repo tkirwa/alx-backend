@@ -43,7 +43,7 @@ In this task, you'll implement a `get_hyper_index` method within the `Server` cl
 
 ## Repository Information
 
-- GitHub Repository: [alx-backend](<repository-link>)
+- GitHub Repository: [alx-backend](https://github.com/tkirwa/alx-backend/tree/main/0x00-pagination)
 - Directory: 0x00-pagination
 
 Please refer to the individual Python files in the repository for the code related to each task.
