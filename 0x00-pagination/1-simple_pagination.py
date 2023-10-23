@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+"""1. Simple pagination"""
+
 import csv
 from typing import List, Tuple
 from math import ceil
