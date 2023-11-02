@@ -38,11 +38,11 @@ babel = Babel(app)
 @babel.localeselector
 def get_locale():
     """Determine the best match from available languages.
-    
+
     Returns:
         str: The best language match.
     """
-    return request.accept_languages.best_match(app.config['LANGUAGES'])
+    return request.accept_languages.best_match(app.config["LANGUAGES"])
 
 
 @app.before_request
