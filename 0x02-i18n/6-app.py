@@ -49,19 +49,23 @@ def get_user(id) -> Union[Dict[str, Union[str, None]], None]:
 
 
 @babel.localeselector
-def get_locale() -> str:
-    """
-    Gets locale from request object
-    """
-    options = [
-        request.args.get('locale', '').strip(),
-        g.user.get('locale', None) if g.user else None,
-        request.accept_languages.best_match(app.config['LANGUAGES']),
-        Config.BABEL_DEFAULT_LOCALE
-    ]
-    for locale in options:
-        if locale and locale in Config.LANGUAGES:
-            return locale
+@babel.localeselector
+def get_locale():
+    # 1. Locale from URL parameters
+    locale = request.args.get("locale")
+    if locale and locale in app.config["LANGUAGES"]:
+        return locale
+
+    # 2. Locale from user settings
+    if g.user and g.user["locale"] in app.config["LANGUAGES"]:
+        return g.user["locale"]
+
+    # 3. Locale from request header
+    return request.accept_languages.best_match(app.config["LANGUAGES"])
+
+    # 4. Default locale (if none of the above match)
+    return app.config["BABEL_DEFAULT_LOCALE"]
+
 
 
 @app.before_request
