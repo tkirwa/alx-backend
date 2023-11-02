@@ -1,16 +1,43 @@
 #!/usr/bin/env python3
-"""0-app module
+"""A basic Flask application with internationalization (i18n) support.
 """
+
 from flask import Flask, render_template, request, g
 from flask_babel import Babel
 
 
 class Config(object):
-    """Config object class"""
+    """Configuration class for Flask-Babel.
+
+    Attributes:
+        LANGUAGES (list): The languages supported by the application.
+        BABEL_DEFAULT_LOCALE (str): The default language.
+        BABEL_DEFAULT_TIMEZONE (str): The default timezone.
+    """
 
     LANGUAGES = ["en", "fr"]
     BABEL_DEFAULT_LOCALE = "en"
     BABEL_DEFAULT_TIMEZONE = "UTC"
+
+
+# configure the flask app
+app = Flask(__name__)
+app.config.from_object(Config)
+app.url_map.strict_slashes = False
+babel = Babel(app)
+
+
+@babel.localeselector
+def get_locale():
+    """Selects the best language match from the available languages.
+
+    Returns:
+        str: The best language match.
+    """
+    locale = request.args.get("locale")
+    if locale and locale in app.config["LANGUAGES"]:
+        return locale
+    return request.accept_languages.best_match(app.config["LANGUAGES"])
 
 
 users = {
@@ -20,46 +47,34 @@ users = {
     4: {"name": "Teletubby", "locale": None, "timezone": "Europe/London"},
 }
 
-app = Flask(__name__)
-app.config.from_object(Config)
-app.url_map.strict_slashes = False
-babel = Babel(app)
-
-
-@babel.localeselector
-def get_locale():
-    """get_locale function
-
-    Returns:
-        str - locale
-    """
-    if request.args.get("locale") in app.config["LANGUAGES"]:
-        return request.args.get("locale")
-    return request.accept_languages.best_match(app.config["LANGUAGES"])
-
 
 def get_user():
-    """get_user function
+    """Gets the user from the users dictionary using the 'login_as' parameter.
 
     Returns:
-        dict - user
+        dict: The user dictionary if found, otherwise None.
     """
-    if request.args.get("login_as"):
-        return users.get(int(request.args.get("login_as")))
+    user_id = request.args.get("login_as")
+    if user_id is not None:
+        return users.get(int(user_id))
     return None
 
 
 @app.before_request
 def before_request():
-    """before_request function"""
+    """Executes before all other functions. Sets the global user variable."""
     g.user = get_user()
 
 
-@app.route("/", methods=["GET"])
-def home():
-    """index function"""
+@app.route("/")
+def index():
+    """Renders the index page.
+
+    Returns:
+        str: The rendered template for the index page.
+    """
     return render_template("5-index.html")
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port="5000", debug=True)
+    app.run(port="5000", host="0.0.0.0", debug=True)
